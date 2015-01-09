@@ -3,7 +3,7 @@ package com.itranswarp.rdb;
 import java.util.ArrayList;
 import java.util.List;
 
-class Update {
+public class Update {
 
     UpdateInfo updateInfo;
 

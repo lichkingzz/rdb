@@ -3,9 +3,9 @@ package com.itranswarp.rdb;
 import java.util.ArrayList;
 import java.util.List;
 
-class Insert {
+public class Insert {
 
-    InsertInfo insertInfo;
+    final InsertInfo insertInfo;
 
     Insert(InsertInfo insertInfo, String table) {
         insertInfo.table = table;

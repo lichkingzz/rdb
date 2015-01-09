@@ -2,7 +2,7 @@ package com.itranswarp.rdb;
 
 public class SelectWhereT<T> {
 
-    SelectInfo selectInfo;
+    final SelectInfo selectInfo;
 
     SelectWhereT(SelectInfo selectInfo, String clause, Object[] args) {
         Utils.validateClause(clause, args);
