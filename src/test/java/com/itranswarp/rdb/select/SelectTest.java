@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -14,24 +13,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Test;
 
+import com.itranswarp.rdb.DbTestBase;
 import com.itranswarp.rdb.EmptyRowException;
 import com.itranswarp.rdb.NonUniqueRowException;
-import com.itranswarp.rdb.Rdb;
 import com.itranswarp.rdb.User;
-import com.itranswarp.rdb.adapter.LocalDateTimeTypeAdapter;
-import com.itranswarp.rdb.adapter.LocalDateTypeAdapter;
-import com.itranswarp.rdb.datasource.JdbcDataSourceManager;
-import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 /**
  * Test select.
  */
-public class SelectTest {
-
-    Rdb rdb = null;
+public class SelectTest extends DbTestBase {
 
     Date toDate(LocalDate d) {
         if (d == null) {
@@ -41,6 +33,10 @@ public class SelectTest {
         c.set(Calendar.YEAR, d.getYear());
         c.set(Calendar.MONTH, d.getMonthValue()-1);
         c.set(Calendar.DAY_OF_MONTH, d.getDayOfMonth());
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
         return c.getTime();
     }
 
@@ -55,31 +51,8 @@ public class SelectTest {
         c.set(Calendar.HOUR_OF_DAY, dt.getHour());
         c.set(Calendar.MINUTE, dt.getMinute());
         c.set(Calendar.SECOND, dt.getSecond());
+        c.set(Calendar.MILLISECOND, 0);
         return c.getTime();
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        if (rdb == null) {
-            ComboPooledDataSource dataSource = new ComboPooledDataSource();
-            dataSource.setDriverClass("com.mysql.jdbc.Driver");
-            dataSource.setJdbcUrl("jdbc:mysql://localhost/test_rdb");
-            dataSource.setUser("test_rdb");
-            dataSource.setPassword("test_rdb");
-            dataSource.setMinPoolSize(2);
-            dataSource.setAcquireIncrement(2);
-            dataSource.setMaxPoolSize(32);
-            JdbcDataSourceManager dataSourceManager = new JdbcDataSourceManager(dataSource);
-            rdb = new Rdb(dataSourceManager);
-            rdb.registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter());
-            rdb.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter());
-        }
-        Connection conn = rdb.getDataSourceManager().getConnection();
-        Statement stmt = conn.createStatement();
-        stmt.execute("delete from User;");
-        stmt.execute("delete from Book;");
-        stmt.close();
-        conn.close();
     }
 
     public Timestamp insertUser(long id, String name, LocalDate birth) throws Exception {

@@ -8,7 +8,7 @@ public class Select {
     final SelectInfo selectInfo;
 
     Select(SelectInfo selectInfo, String[] fields) {
-        selectInfo.fields = (fields.length == 0 || (fields.length==1 && fields[0].trim().equals("*"))) ? null : Arrays.asList(fields);
+        selectInfo.fields = (fields.length == 0 || (fields.length==1 && fields[0].equals("*"))) ? null : Arrays.asList(fields);
         this.selectInfo = selectInfo;
     }
 
@@ -61,7 +61,7 @@ class SelectRunnerT<T> {
     }
 
     public String dryRun() {
-        return new SelectRunner(this.selectInfo).dryRun();
+        return dryRun(false);
     }
 
     public String dryRun(boolean includeParams) {
