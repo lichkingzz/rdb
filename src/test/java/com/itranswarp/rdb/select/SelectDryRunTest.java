@@ -197,7 +197,7 @@ public class SelectDryRunTest {
                         .dryRun());
 
         assertEquals("SELECT name FROM User WHERE s>=? and g<?",
-                newRdb().select(" * ")
+                newRdb().select("*")
                         .from(User.class)
                         .excludeFields("id", "email", "passwd", "gender", "aboutMe", "birth", "lastLoginAt", "createdAt", "updatedAt", "version")
                         .where("s>=? and g<?", 123, 456)

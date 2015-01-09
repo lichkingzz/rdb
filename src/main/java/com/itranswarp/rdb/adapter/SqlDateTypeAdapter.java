@@ -36,7 +36,7 @@ public class SqlDateTypeAdapter implements TypeAdapter<java.sql.Date> {
     }
 
     @Override
-    public Object toJdbcType(java.sql.Date value) {
+    public Object toJdbcType(Object value) {
         return value;
     }
 

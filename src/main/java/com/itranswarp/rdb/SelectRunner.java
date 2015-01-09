@@ -56,11 +56,7 @@ class SelectRunner {
         ResultSet rs = null;
         try {
             ps = conn.prepareStatement(sql);
-            int n = 0;
-            for (Object arg : args) {
-                n ++;
-                ps.setObject(n, arg);
-            }
+            SQLUtils.setPreparedStatementParameters(ps, args);
             rs = ps.executeQuery();
             ResultSetMetaData meta = rs.getMetaData();
             String[] fields = new String[meta.getColumnCount()];
@@ -138,11 +134,11 @@ class SelectRunner {
             if (prop == null) {
                 throw new MappingException("There is no property \"" + key + "\" found in class: " + this.selectInfo.beanClass.getName());
             }
-            if (!prop.isSimpleType()) {
+            if (value != null && !prop.isSimpleType()) {
                 Class<?> type = prop.getPropertyType();
-                if (value != null && !type.isInstance(value)) {
-                    // convert value to property type:
-                    value = this.selectInfo.rdb.convertTo(type, value);
+                if (!type.isInstance(value)) {
+                    // convert jdbc value to property type:
+                    value = this.selectInfo.rdb.jdbcTypeToJavaType(type, value);
                 }
             }
             prop.setProperty(bean, value);

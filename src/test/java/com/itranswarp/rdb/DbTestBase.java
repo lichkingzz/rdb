@@ -2,6 +2,7 @@ package com.itranswarp.rdb;
 
 import java.sql.Connection;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -9,6 +10,8 @@ import org.junit.Before;
 
 import com.itranswarp.rdb.adapter.LocalDateTimeTypeAdapter;
 import com.itranswarp.rdb.adapter.LocalDateTypeAdapter;
+import com.itranswarp.rdb.adapter.SqlDateTypeAdapter;
+import com.itranswarp.rdb.adapter.TimestampTypeAdapter;
 import com.itranswarp.rdb.datasource.JdbcDataSourceManager;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
@@ -31,6 +34,8 @@ public class DbTestBase {
             rdb = new Rdb(dataSourceManager);
             rdb.registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter());
             rdb.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter());
+            rdb.registerTypeAdapter(Timestamp.class, new TimestampTypeAdapter());
+            rdb.registerTypeAdapter(java.sql.Date.class, new SqlDateTypeAdapter());
         }
         Connection conn = rdb.getDataSourceManager().getConnection();
         Statement stmt = conn.createStatement();

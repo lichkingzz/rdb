@@ -30,7 +30,7 @@ public class TimestampTypeAdapter implements TypeAdapter<Timestamp> {
     }
 
     @Override
-    public Object toJdbcType(Timestamp value) {
+    public Object toJdbcType(Object value) {
         return value;
     }
 

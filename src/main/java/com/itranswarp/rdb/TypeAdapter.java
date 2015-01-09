@@ -22,5 +22,5 @@ public interface TypeAdapter<T> {
      * @param value Java object.
      * @return JDBC-compatible type.
      */
-    Object toJdbcType(T value);
+    Object toJdbcType(Object value);
 }

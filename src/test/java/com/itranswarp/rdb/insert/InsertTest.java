@@ -4,7 +4,10 @@ import static org.junit.Assert.*;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -15,6 +18,23 @@ import com.itranswarp.rdb.User;
  * Test insert.
  */
 public class InsertTest extends DbTestBase {
+
+    User prepareUser(long id, String name, LocalDate birth) {
+        User u = new User();
+        u.id = id;
+        u.name = name;
+        u.email = name + "@insert.sql";
+        u.passwd = "PASSWORD";
+        u.gender = true;
+        u.aboutMe = null;
+        u.birth = birth;
+        u.lastLoginAt = LocalDateTime.of(2015,  1, 1, 2, 3, 4);
+        long t = System.currentTimeMillis();
+        u.createdAt = new Timestamp(t);
+        u.updatedAt = new Timestamp(t);
+        u.version = 0;
+        return u;
+    }
 
     @Test
     public void testInsertFromString() throws Exception {
@@ -48,7 +68,20 @@ public class InsertTest extends DbTestBase {
     }
 
     @Test
-    public void testInsertFromStringWithArgs() {
+    public void testInsertBeans() throws Exception {
+        User a = prepareUser(17023001L, "A", LocalDate.of(2000, 1, 1));
+        User b = prepareUser(17023002L, "B", LocalDate.of(2000, 1, 1));
+        User c = prepareUser(17023003L, "C", LocalDate.of(2000, 1, 1));
+        rdb.insert(User.class).batch(a, b, c).run();
+        // select:
+        List<User> us = rdb.select().from(User.class).where("birth=?", new SimpleDateFormat("yyyy-MM-dd").parse("2000-01-01")).orderBy("name").list();
+        assertEquals(3, us.size());
+        User u1 = us.get(0);
+        User u2 = us.get(1);
+        User u3 = us.get(2);
+        assertEquals("A", u1.name);
+        assertEquals("B", u2.name);
+        assertEquals("C", u3.name);
     }
 
 }

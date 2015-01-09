@@ -39,9 +39,9 @@ public class LocalDateTimeTypeAdapter implements TypeAdapter<LocalDateTime> {
     }
 
     @Override
-    public Object toJdbcType(LocalDateTime value) {
-        long n = value.atZone(ZoneId.systemDefault()).toInstant().getEpochSecond();
-        return new java.sql.Date(n);
+    public Object toJdbcType(Object value) {
+        long n = ((LocalDateTime) value).atZone(ZoneId.systemDefault()).toInstant().getEpochSecond();
+        return new java.sql.Date(n * 1000);
     }
 
 }

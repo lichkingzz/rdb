@@ -1,5 +1,8 @@
 package com.itranswarp.rdb;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 class SQLUtils {
 
     static String toArgString(Object arg) {
@@ -28,4 +31,9 @@ class SQLUtils {
         return "'" + arg + "'";
     }
 
+    static void setPreparedStatementParameters(PreparedStatement ps, Object[] values) throws SQLException {
+        for (int i=0; i<values.length; i++) {
+            ps.setObject(i+1, values[i]);
+        }
+    }
 }
