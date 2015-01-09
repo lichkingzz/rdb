@@ -12,13 +12,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class SelectRunner {
+class SelectRunner {
 
     static final List<String> SELECT_ALL = Arrays.asList("*");
 
     static final Object[] EMPTY_ARGS = new Object[0];
 
-    SelectInfo selectInfo;
+    final SelectInfo selectInfo;
 
     SelectRunner(SelectInfo selectInfo) {
         this.selectInfo = selectInfo;

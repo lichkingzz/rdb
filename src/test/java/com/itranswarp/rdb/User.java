@@ -5,21 +5,19 @@ import java.time.LocalDateTime;
 
 public class User extends AbstractEntity {
 
-    long id;
+    public String email;
 
-    String email;
+    public String passwd;
 
-    String passwd;
+    public String name;
 
-    String name;
+    public boolean gender;
 
-    boolean gender;
+    public String aboutMe;
 
-    String aboutMe;
+    public LocalDate birth;
 
-    LocalDate birth;
-
-    LocalDateTime lastLoginAt;
+    public LocalDateTime lastLoginAt;
 
     transient boolean locked;
 

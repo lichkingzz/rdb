@@ -1,6 +1,5 @@
 package com.itranswarp.rdb;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +21,10 @@ public class Rdb {
         this.dataSourceManager = dataSourceManager;
     }
 
+    public DataSourceManager getDataSourceManager() {
+        return this.dataSourceManager;
+    }
+
     public void setDataSourceManager(DataSourceManager dataSourceManager) {
         this.dataSourceManager = dataSourceManager;
     }
@@ -39,21 +42,15 @@ public class Rdb {
     }
 
     public Select select(String... fields) {
-        SelectInfo selectInfo = new SelectInfo(this);
-        selectInfo.fields = (fields.length == 0 || (fields.length==1 && fields[0].trim().equals("*"))) ? null : Arrays.asList(fields);
-        return new Select(selectInfo);
+        return new Select(new SelectInfo(this), fields);
     }
 
     public Insert insert(String table) {
-        InsertInfo insertInfo = new InsertInfo(this);
-        insertInfo.table = table;
-        return new Insert(insertInfo);
+        return new Insert(new InsertInfo(this), table);
     }
 
-    public InsertT<Object> insert(Object... objects) {
-        InsertInfo insertInfo = new InsertInfo(this);
-        insertInfo.beans = objects;
-        return new InsertT<Object>(insertInfo);
+    public InsertT insert(Object... objects) {
+        return new InsertT(new InsertInfo(this), objects);
     }
 
     public Update update(String table) {
@@ -81,4 +78,5 @@ public class Rdb {
         deleteInfo.bean = object;
         return new DeleteT<T>(deleteInfo);
     }
+
 }

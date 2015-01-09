@@ -4,8 +4,10 @@ import java.sql.Timestamp;
 
 public class AbstractEntity {
 
-    Timestamp createdAt;
-    Timestamp updatedAt;
-    long version;
+    public long id;
+
+    public Timestamp createdAt;
+    public Timestamp updatedAt;
+    public long version;
 
 }

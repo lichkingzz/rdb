@@ -1,4 +1,4 @@
-package com.itranswarp.rdb;
+package com.itranswarp.rdb.select;
 
 import static org.junit.Assert.*;
 
@@ -17,6 +17,10 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.itranswarp.rdb.EmptyRowException;
+import com.itranswarp.rdb.NonUniqueRowException;
+import com.itranswarp.rdb.Rdb;
+import com.itranswarp.rdb.User;
 import com.itranswarp.rdb.adapter.LocalDateTimeTypeAdapter;
 import com.itranswarp.rdb.adapter.LocalDateTypeAdapter;
 import com.itranswarp.rdb.datasource.JdbcDataSourceManager;
@@ -70,7 +74,7 @@ public class SelectTest {
             rdb.registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter());
             rdb.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter());
         }
-        Connection conn = rdb.dataSourceManager.getConnection();
+        Connection conn = rdb.getDataSourceManager().getConnection();
         Statement stmt = conn.createStatement();
         stmt.execute("delete from User;");
         stmt.execute("delete from Book;");
@@ -97,7 +101,7 @@ public class SelectTest {
                 t,
                 0
         };
-        Connection conn = rdb.dataSourceManager.getConnection();
+        Connection conn = rdb.getDataSourceManager().getConnection();
         PreparedStatement ps = conn.prepareStatement("insert into User(id, email, passwd, name, gender, aboutMe, birth, lastLoginAt, createdAt, updatedAt, version) values (?,?,?,?,?,?,?,?,?,?,?)");
         int n = 0;
         for (Object arg : args) {

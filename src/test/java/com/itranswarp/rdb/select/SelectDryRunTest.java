@@ -1,10 +1,13 @@
-package com.itranswarp.rdb;
+package com.itranswarp.rdb.select;
 
 import static org.junit.Assert.*;
 
 import java.time.LocalDate;
 
 import org.junit.Test;
+
+import com.itranswarp.rdb.Rdb;
+import com.itranswarp.rdb.User;
 
 /**
  * Test select.
@@ -189,14 +192,14 @@ public class SelectDryRunTest {
         assertEquals("SELECT name FROM User WHERE s>=? and g<?",
                 newRdb().select()
                         .from(User.class)
-                        .excludeFields("id", "email", "password", "gender", "aboutMe", "birth", "lastLoginAt", "createdAt", "updatedAt", "version")
+                        .excludeFields("id", "email", "passwd", "gender", "aboutMe", "birth", "lastLoginAt", "createdAt", "updatedAt", "version")
                         .where("s>=? and g<?", 123, 456)
                         .dryRun());
 
         assertEquals("SELECT name FROM User WHERE s>=? and g<?",
                 newRdb().select(" * ")
                         .from(User.class)
-                        .excludeFields("id", "email", "password", "gender", "aboutMe", "birth", "lastLoginAt", "createdAt", "updatedAt", "version")
+                        .excludeFields("id", "email", "passwd", "gender", "aboutMe", "birth", "lastLoginAt", "createdAt", "updatedAt", "version")
                         .where("s>=? and g<?", 123, 456)
                         .dryRun());
 

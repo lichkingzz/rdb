@@ -7,7 +7,8 @@ class Insert {
 
     InsertInfo insertInfo;
 
-    Insert(InsertInfo insertInfo) {
+    Insert(InsertInfo insertInfo, String table) {
+        insertInfo.table = table;
         this.insertInfo = insertInfo;
     }
 
@@ -24,11 +25,12 @@ class Insert {
     }
 }
 
-class InsertT<T> {
+class InsertT {
 
     InsertInfo insertInfo;
 
-    InsertT(InsertInfo insertInfo) {
+    InsertT(InsertInfo insertInfo, Object[] beans) {
+        insertInfo.beans = beans;
         this.insertInfo = insertInfo;
     }
 
