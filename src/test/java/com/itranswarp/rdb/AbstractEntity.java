@@ -1,9 +1,11 @@
 package com.itranswarp.rdb;
 
+import java.sql.Timestamp;
+
 public class AbstractEntity {
 
-    long createdAt;
-    long updatedAt;
+    Timestamp createdAt;
+    Timestamp updatedAt;
     long version;
 
 }

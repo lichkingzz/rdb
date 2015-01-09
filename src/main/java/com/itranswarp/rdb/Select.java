@@ -2,6 +2,7 @@ package com.itranswarp.rdb;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 class Select {
 
@@ -12,14 +13,11 @@ class Select {
     }
 
     public From from(String table) {
-        this.selectInfo.table = table;
-        return new From(this.selectInfo);
+        return new From(this.selectInfo, table);
     }
 
-    public <T> FromT<T> from(Class<T> clazz) {
-        this.selectInfo.table = clazz.getSimpleName();
-        this.selectInfo.clazz = clazz;
-        return new FromT<T>(this.selectInfo);
+    public <T> FromT<T> from(Class<T> beanClass) {
+        return new FromT<T>(this.selectInfo, beanClass);
     }
 }
 
@@ -29,11 +27,12 @@ class SelectInfo {
     List<String> fields = null;
     String[] excludeFields;
     String table = null;
-    Class<?> clazz = null;
+    Class<?> beanClass = null;
+    BeanMapper beanMapper = null;
     String whereClause = null;
     Object[] whereArgs = null;
     OrderByInfo[] orderBys = null;
-    int[] limit = null;
+    Object[] limit = null;
 
     public SelectInfo(Rdb rdb) {
         this.rdb = rdb;
@@ -57,29 +56,71 @@ class From {
 
     SelectInfo selectInfo;
 
-    From(SelectInfo selectInfo) {
+    From(SelectInfo selectInfo, String table) {
+        if (table == null) {
+            throw new NullPointerException("table");
+        }
+        if (table.trim().isEmpty()) {
+            throw new IllegalArgumentException("table cannot be blank.");
+        }
+        selectInfo.table = table.trim();
         this.selectInfo = selectInfo;
     }
 
     public SelectWhere where(String clause, Object... args) {
-        this.selectInfo.whereClause = clause;
-        this.selectInfo.whereArgs = args;
-        return new SelectWhere(this.selectInfo);
+        return new SelectWhere(this.selectInfo, clause, args);
     }
+
+    public OrderBy orderBy(String field) {
+        return new OrderBy(this.selectInfo, field);
+    }
+
+    public Limit limit(int offset, int maxResults) {
+        return new Limit(this.selectInfo, offset, maxResults);
+    }
+
+    public Limit limit(int maxResults) {
+        return new Limit(this.selectInfo, 0, maxResults);
+    }
+
+    public String dryRun() {
+        return new SelectRunner(this.selectInfo).dryRun();
+    }
+
+    public String dryRun(boolean includeParams) {
+        return new SelectRunner(this.selectInfo).dryRun(includeParams);
+    }
+
+    public List<Map<String, Object>> list() {
+        return new SelectRunner(this.selectInfo).list();
+    }
+
+    public Map<String, Object> first() {
+        return new SelectRunner(this.selectInfo).first();
+    }
+
+    public Map<String, Object> unique() {
+        return new SelectRunner(this.selectInfo).unique();
+    }
+
 }
 
 class FromT<T> {
 
     SelectInfo selectInfo;
 
-    FromT(SelectInfo selectInfo) {
+    FromT(SelectInfo selectInfo, Class<?> beanClass) {
+        if (beanClass == null) {
+            throw new NullPointerException("beanClass");
+        }
+        selectInfo.beanMapper = Mappers.getMapper(beanClass);
+        selectInfo.table = selectInfo.beanMapper.table;
+        selectInfo.beanClass = beanClass;
         this.selectInfo = selectInfo;
     }
 
     public SelectWhereT<T> where(String clause, Object... args) {
-        this.selectInfo.whereClause = clause;
-        this.selectInfo.whereArgs = args;
-        return new SelectWhereT<T>(this.selectInfo);
+        return new SelectWhereT<T>(this.selectInfo, clause, args);
     }
 
     public FromT<T> excludeFields(String... fields) {
@@ -96,14 +137,37 @@ class FromT<T> {
         return this;
     }
 
-    public T byId(Object id) {
-        this.selectInfo.whereClause = ":id=?";
-        this.selectInfo.whereArgs = new Object[] { id };
-        return new SelectRunT<T>(this.selectInfo).first();
+    public LimitT<T> limit(int maxResults) {
+        return new LimitT<T>(this.selectInfo, 0, maxResults);
+    }
+
+    public LimitT<T> limit(int offset, int maxResults) {
+        return new LimitT<T>(this.selectInfo, offset, maxResults);
+    }
+
+    public OrderByT<T> orderBy(String field) {
+        return new OrderByT<T>(this.selectInfo, field);
+    }
+
+    public T byId(Object idValue) {
+        String idField = this.selectInfo.beanMapper.primaryKey;
+        return new SelectWhereT<T>(this.selectInfo, idField + "=?", new Object[] { idValue }).unique();
+    }
+
+    public List<T> list() {
+        return new SelectRunner(this.selectInfo).list();
+    }
+
+    public T unique() {
+        return new SelectRunner(this.selectInfo).unique();
     }
 
     public T first() {
-        return new SelectRunT<T>(this.selectInfo).first();
+        return new SelectRunner(this.selectInfo).first();
+    }
+
+    public String dryRun() {
+        return new SelectRunnerT<T>(this.selectInfo).dryRun();
     }
 }
 
@@ -111,13 +175,31 @@ class SelectWhere {
 
     SelectInfo selectInfo;
 
-    SelectWhere(SelectInfo selectInfo) {
+    SelectWhere(SelectInfo selectInfo, String clause, Object[] args) {
+        Utils.validateClause(clause, args);
+        selectInfo.whereClause = clause.trim();
+        selectInfo.whereArgs = args;
         this.selectInfo = selectInfo;
     }
 
     public OrderBy orderBy(String field) {
-        this.selectInfo.orderBys = new OrderByInfo[] { new OrderByInfo(field, false) };
-        return new OrderBy(this.selectInfo);
+        return new OrderBy(this.selectInfo, field);
+    }
+
+    public Limit limit(int offset, int maxResults) {
+        return new Limit(this.selectInfo, offset, maxResults);
+    }
+
+    public Limit limit(int maxResults) {
+        return new Limit(this.selectInfo, 0, maxResults);
+    }
+
+    public String dryRun() {
+        return new SelectRunner(this.selectInfo).dryRun();
+    }
+
+    public String dryRun(boolean includeParams) {
+        return new SelectRunner(this.selectInfo).dryRun(includeParams);
     }
 }
 
@@ -125,67 +207,73 @@ class SelectWhereT<T> {
 
     SelectInfo selectInfo;
 
-    SelectWhereT(SelectInfo selectInfo) {
+    SelectWhereT(SelectInfo selectInfo, String clause, Object[] args) {
+        Utils.validateClause(clause, args);
+        selectInfo.whereClause = clause.trim();
+        selectInfo.whereArgs = args;
         this.selectInfo = selectInfo;
     }
 
     public OrderByT<T> orderBy(String field) {
-        this.selectInfo.orderBys = new OrderByInfo[] { new OrderByInfo(field, false) };
-        return new OrderByT<T>(this.selectInfo);
+        return new OrderByT<T>(this.selectInfo, field);
+    }
+
+    public LimitT<T> limit(int offset, int maxResults) {
+        return new LimitT<T>(this.selectInfo, offset, maxResults);
+    }
+
+    public LimitT<T> limit(int maxResults) {
+        return new LimitT<T>(this.selectInfo, 0, maxResults);
     }
 
     public T first() {
-        return new SelectRunT<T>(this.selectInfo).first();
+        return new SelectRunnerT<T>(this.selectInfo).first();
     }
 
-    public T one() {
-        List<T> list = new SelectRunT<T>(this.selectInfo).list();
-        return list.get(0);
+    public T unique() {
+        return new SelectRunnerT<T>(this.selectInfo).unique();
+    }
+
+    public String dryRun() {
+        return new SelectRunner(this.selectInfo).dryRun();
+    }
+
+    public String dryRun(boolean includeParams) {
+        return new SelectRunner(this.selectInfo).dryRun(includeParams);
     }
 }
 
-class OrderBy {
+class OrderBy extends OrderByT<Map<String, Object>> {
 
-    SelectInfo selectInfo;
-
-    public OrderBy(SelectInfo selectInfo) {
-        this.selectInfo = selectInfo;
-    }
-
-    public OrderBy asc() {
-        this.selectInfo.orderBys[this.selectInfo.orderBys.length-1].desc = false;
-        return this;
-    }
-
-    public OrderBy desc() {
-        this.selectInfo.orderBys[this.selectInfo.orderBys.length-1].desc = true;
-        return this;
-    }
-
-    public OrderBy orderBy(String field) {
-        OrderByInfo[] newOrderBys = new OrderByInfo[this.selectInfo.orderBys.length + 1];
-        System.arraycopy(this.selectInfo.orderBys, 0, newOrderBys, 0, this.selectInfo.orderBys.length);
-        newOrderBys[newOrderBys.length - 1] = new OrderByInfo(field, false);
-        this.selectInfo.orderBys = newOrderBys;
-        return new OrderBy(this.selectInfo);
+    public OrderBy(SelectInfo selectInfo, String field) {
+        super(selectInfo, field);
     }
 
     public Limit limit(int offset, int maxResults) {
-        this.selectInfo.limit = new int[] { offset, maxResults };
-        return new Limit(this.selectInfo);
+        return new Limit(this.selectInfo, offset, maxResults);
     }
 
     public Limit limit(int maxResults) {
-        this.selectInfo.limit = new int[] { 0, maxResults };
-        return new Limit(this.selectInfo);
+        return new Limit(this.selectInfo, 0, maxResults);
     }
+
 }
 
 class OrderByT<T> {
 
     SelectInfo selectInfo;
 
-    public OrderByT(SelectInfo selectInfo) {
+    public OrderByT(SelectInfo selectInfo, String field) {
+        if (selectInfo.orderBys == null) {
+            // first orderBy():
+            selectInfo.orderBys = new OrderByInfo[] { new OrderByInfo(field, false) };
+        }
+        else {
+            OrderByInfo[] newOrderBys = new OrderByInfo[selectInfo.orderBys.length + 1];
+            System.arraycopy(selectInfo.orderBys, 0, newOrderBys, 0, selectInfo.orderBys.length);
+            newOrderBys[newOrderBys.length - 1] = new OrderByInfo(field, false);
+            selectInfo.orderBys = newOrderBys;
+        }
         this.selectInfo = selectInfo;
     }
 
@@ -200,16 +288,11 @@ class OrderByT<T> {
     }
 
     public OrderByT<T> orderBy(String field) {
-        OrderByInfo[] newOrderBys = new OrderByInfo[this.selectInfo.orderBys.length + 1];
-        System.arraycopy(this.selectInfo.orderBys, 0, newOrderBys, 0, this.selectInfo.orderBys.length);
-        newOrderBys[newOrderBys.length - 1] = new OrderByInfo(field, false);
-        this.selectInfo.orderBys = newOrderBys;
-        return new OrderByT<T>(this.selectInfo);
+        return new OrderByT<T>(this.selectInfo, field);
     }
 
     public LimitT<T> limit(int offset, int maxResults) {
-        this.selectInfo.limit = new int[] { offset, maxResults };
-        return new LimitT<T>(this.selectInfo);
+        return new LimitT<T>(this.selectInfo, offset, maxResults);
     }
 
     public LimitT<T> limit(int maxResults) {
@@ -217,76 +300,92 @@ class OrderByT<T> {
     }
 
     public List<T> list() {
-        return new SelectRunT<T>(this.selectInfo).list();
+        return new SelectRunnerT<T>(this.selectInfo).list();
     }
 
     public T first() {
-        return new SelectRunT<T>(this.selectInfo).first();
+        return new SelectRunnerT<T>(this.selectInfo).first();
     }
 
-}
-
-class Limit {
-
-    SelectInfo selectInfo;
-
-    public Limit(SelectInfo selectInfo) {
-        this.selectInfo = selectInfo;
+    public String dryRun() {
+        return new SelectRunner(this.selectInfo).dryRun();
     }
 
-    public List<?> list() {
-        return null;
+    public String dryRun(boolean includeParams) {
+        return new SelectRunner(this.selectInfo).dryRun(includeParams);
     }
 }
 
 class LimitT<T> {
 
-    SelectInfo selectInfo;
+    final SelectInfo selectInfo;
 
-    public LimitT(SelectInfo selectInfo) {
+    public LimitT(SelectInfo selectInfo, int offset, int maxResults) {
+        if (offset < 0) {
+            throw new IllegalArgumentException("Invalid offset: must be equal or greater than 0.");
+        }
+        if (maxResults < 1) {
+            throw new IllegalArgumentException("Invalid offset: must be greater than 0.");
+        }
+        selectInfo.limit = new Object[] { offset, maxResults };
         this.selectInfo = selectInfo;
     }
 
     public List<T> list() {
-        new SelectRun(this.selectInfo).list();
+        new SelectRunner(this.selectInfo).list();
         return new ArrayList<T>();
     }
-}
 
-class SelectRun {
-
-    SelectInfo selectInfo;
-
-    SelectRun(SelectInfo selectInfo) {
-        this.selectInfo = selectInfo;
-    }
-
-    public SelectRun dryRun() {
-        return this;
-    }
-
-    public int list() {
-        return 0;
-    }
-}
-
-class SelectRunT<T> {
-
-    SelectInfo selectInfo;
-
-    SelectRunT(SelectInfo selectInfo) {
-        this.selectInfo = selectInfo;
-    }
-
-    public SelectRunT<T> dryRun() {
-        return this;
-    }
-
-    public List<T> list() {
-        return new ArrayList<T>();
+    public T unique() {
+        return new SelectRunner(this.selectInfo).unique();
     }
 
     public T first() {
-        return null;
+        return new SelectRunner(this.selectInfo).first();
+    }
+
+    public String dryRun() {
+        return new SelectRunner(this.selectInfo).dryRun();
+    }
+
+    public String dryRun(boolean includeParams) {
+        return new SelectRunner(this.selectInfo).dryRun(includeParams);
+    }
+}
+
+class Limit extends LimitT<Map<String, Object>> {
+
+    public Limit(SelectInfo selectInfo, int offset, int maxResults) {
+        super(selectInfo, offset, maxResults);
+    }
+
+}
+
+class SelectRunnerT<T> {
+
+    SelectInfo selectInfo;
+
+    SelectRunnerT(SelectInfo selectInfo) {
+        this.selectInfo = selectInfo;
+    }
+
+    public String dryRun() {
+        return new SelectRunner(this.selectInfo).dryRun();
+    }
+
+    public String dryRun(boolean includeParams) {
+        return new SelectRunner(this.selectInfo).dryRun(includeParams);
+    }
+
+    public List<T> list() {
+        return new SelectRunner(this.selectInfo).list();
+    }
+
+    public T unique() {
+        return new SelectRunner(this.selectInfo).unique();
+    }
+
+    public T first() {
+        return new SelectRunner(this.selectInfo).first();
     }
 }
