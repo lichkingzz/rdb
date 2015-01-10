@@ -85,18 +85,42 @@ public class Rdb {
         return new InsertT<T>(new InsertInfo(this), beanClass);
     }
 
+    /**
+     * Start an UPDATE SQL.
+     * 
+     * @param table The table name.
+     * @return Update object for next operation.
+     */
     public Update update(String table) {
         return new Update(new UpdateInfo(this), table);
     }
 
+    /**
+     * Start an update of JavaBean.
+     * 
+     * @param beanClass The JavaBean class.
+     * @return Update object for next operation.
+     */
     public <T> UpdateT<T> update(Class<T> beanClass) {
         return new UpdateT<T>(new UpdateInfo(this), beanClass);
     }
 
+    /**
+     * Start a DELETE SQL.
+     * 
+     * @param table The table name.
+     * @return Delete object for next operation.
+     */
     public Delete delete(String table) {
         return new Delete(new DeleteInfo(this), table);
     }
 
+    /**
+     * Start a delete of JavaBean.
+     * 
+     * @param beanClass
+     * @return Delete object for next operation.
+     */
     public <T> DeleteT<T> delete(Class<T> beanClass) {
         return new DeleteT<T>(new DeleteInfo(this), beanClass);
     }
