@@ -104,74 +104,7 @@ public class SelectTest extends DbTestBase {
 //                        .from("student")
 //                        .dryRun());
 //
-//        assertEquals("SELECT * FROM student WHERE id=?",
-//                newRdb().select()
-//                        .from("student")
-//                        .where("id=?", 123)
-//                        .dryRun());
-//
-//        assertEquals("SELECT * FROM student WHERE s>=? and g<?",
-//                newRdb().select()
-//                        .from("student")
-//                        .where("s>=? and g<?", 123, 456)
-//                        .dryRun());
-//
-//        assertEquals("SELECT * FROM student LIMIT 0, 100",
-//                newRdb().select()
-//                        .from("student")
-//                        .limit(100)
-//                        .dryRun(true));
-//
-//        assertEquals("SELECT * FROM student LIMIT ?, ?",
-//                newRdb().select()
-//                        .from("student")
-//                        .limit(10, 100)
-//                        .dryRun());
-//
-//        assertEquals("SELECT * FROM student WHERE s>=? and g<? LIMIT ?, ?",
-//                newRdb().select()
-//                        .from("student")
-//                        .where("s>=? and g<?", 123, 456)
-//                        .limit(10, 100)
-//                        .dryRun());
-//
-//        assertEquals("SELECT * FROM student ORDER BY score DESC",
-//                newRdb().select()
-//                        .from("student")
-//                        .orderBy("score").desc()
-//                        .dryRun());
-//
-//        assertEquals("SELECT * FROM student ORDER BY score DESC LIMIT ?, ?",
-//                newRdb().select()
-//                        .from("student")
-//                        .orderBy("score").desc()
-//                        .limit(10, 100)
-//                        .dryRun());
-//
-//        assertEquals("SELECT * FROM student WHERE s>=? and g<? ORDER BY score DESC, name LIMIT ?, ?",
-//                newRdb().select()
-//                        .from("student")
-//                        .where("s>=? and g<?", 123, 456)
-//                        .orderBy("score").desc()
-//                        .orderBy("name")
-//                        .limit(10, 100)
-//                        .dryRun());
-//    }
-//
-//    @Test
-//    public void testSelectFromStringWithArgs() {
-//        assertEquals("SELECT * FROM student",
-//                newRdb().select()
-//                        .from("student")
-//                        .dryRun(true));
-//
-//        assertEquals("SELECT * FROM student",
-//                newRdb().select("*")
-//                        .from("student")
-//                        .dryRun(true));
-//
-//        assertEquals("SELECT id, name, grade FROM student",
-//                newRdb().select("id", "name", "grade")
+//        assertEquals("SELECT * FROM student WHER
 //                        .from("student")
 //                        .dryRun(true));
 //
@@ -215,49 +148,6 @@ public class SelectTest extends DbTestBase {
 //        assertEquals("SELECT * FROM student ORDER BY score DESC LIMIT 10, 100",
 //                newRdb().select()
 //                        .from("student")
-//                        .orderBy("score").desc()
-//                        .limit(10, 100)
-//                        .dryRun(true));
-//
-//        assertEquals("SELECT * FROM student WHERE s=1 and g<\'2015-01-05\' ORDER BY score DESC, name LIMIT 10, 100",
-//                newRdb().select()
-//                        .from("student")
-//                        .where("s=? and g<?", true, LocalDate.of(2015, 1, 5))
-//                        .orderBy("score").desc()
-//                        .orderBy("name")
-//                        .limit(10, 100)
-//                        .dryRun(true));
-//    }
-//
-//    @Test
-//    public void testSelectFromBean() {
-//        assertEquals("SELECT * FROM User",
-//                newRdb().select()
-//                        .from(User.class)
-//                        .dryRun());
-//
-//        assertEquals("SELECT * FROM User",
-//                newRdb().select("*")
-//                        .from(User.class)
-//                        .dryRun());
-//
-//        assertEquals("SELECT id, name, grade FROM User",
-//                newRdb().select("id", "name", "grade")
-//                        .from(User.class)
-//                        .dryRun());
-//
-//        assertEquals("SELECT * FROM User WHERE id=?",
-//                newRdb().select()
-//                        .from(User.class)
-//                        .where("id=?", 123)
-//                        .dryRun());
-//
-//        assertEquals("SELECT * FROM User WHERE s>=? and g<?",
-//                newRdb().select()
-//                        .from(User.class)
-//                        .where("s>=? and g<?", 123, 456)
-//                        .dryRun());
-//
 //        assertEquals("SELECT name FROM User WHERE s>=? and g<?",
 //                newRdb().select()
 //                        .from(User.class)
@@ -265,35 +155,6 @@ public class SelectTest extends DbTestBase {
 //                        .where("s>=? and g<?", 123, 456)
 //                        .dryRun());
 //
-//        assertEquals("SELECT name FROM User WHERE s>=? and g<?",
-//                newRdb().select(" * ")
-//                        .from(User.class)
-//                        .excludeFields("id", "email", "password", "birth", "createdAt", "updatedAt", "version")
-//                        .where("s>=? and g<?", 123, 456)
-//                        .dryRun());
-//
-//        assertEquals("SELECT * FROM User LIMIT 0, 100",
-//                newRdb().select()
-//                        .from(User.class)
-//                        .limit(100)
-//                        .dryRun(true));
-//
-//        assertEquals("SELECT * FROM User LIMIT ?, ?",
-//                newRdb().select()
-//                        .from(User.class)
-//                        .limit(10, 100)
-//                        .dryRun());
-//
-//        assertEquals("SELECT * FROM User WHERE s>=? and g<? LIMIT ?, ?",
-//                newRdb().select()
-//                        .from(User.class)
-//                        .where("s>=? and g<?", 123, 456)
-//                        .limit(10, 100)
-//                        .dryRun());
-//
-//        assertEquals("SELECT * FROM User ORDER BY score DESC",
-//                newRdb().select()
-//                        .from(User.class)
 //                        .orderBy("score").desc()
 //                        .dryRun());
 //
@@ -407,5 +268,15 @@ public class SelectTest extends DbTestBase {
                 .from(User.class)
                 .where("name=?", "No Name of this User")
                 .unique();
+    }
+
+    @Test(expected=NullPointerException.class)
+    public void testSelectWhereIsNull() {
+        rdb.select().from("User").where(null, 1, 2, 3);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testSelectWhereArgIsEmpty() {
+        rdb.select().from("User").where("name=?");
     }
 }

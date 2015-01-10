@@ -41,6 +41,12 @@ public class SelectDryRunTest {
                         .where("id=?", 123)
                         .dryRun());
 
+        assertEquals("SELECT * FROM student WHERE name is null",
+                newRdb().select()
+                        .from("student")
+                        .where("name is null")
+                        .dryRun());
+
         assertEquals("SELECT * FROM student WHERE s>=? and g<?",
                 newRdb().select()
                         .from("student")
