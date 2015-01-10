@@ -7,15 +7,20 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+/**
+ * Utils methods.
+ * 
+ * @author Michael Liao
+ */
 public class SQLUtils {
 
     /**
-     * Convert string as format "yyyy-MM-dd HH:mm:ss" or "yyyy-MM-dd HH:mm" to java.util.Date.
+     * Convert string as format "yyyy-MM-dd HH:mm:ss" or "yyyy-MM-dd HH:mm" or "yyyy-MM-dd" to java.util.Date.
      * 
      * @param date String date.
      * @return java.util.Date object.
      */
-    public static java.util.Date asDate(String date) {
+    public static java.util.Date asUtilDate(String date) {
         try {
             return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(date);
         }
@@ -23,6 +28,11 @@ public class SQLUtils {
         }
         try {
             return new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(date);
+        }
+        catch (ParseException e) {
+        }
+        try {
+            return new SimpleDateFormat("yyyy-MM-dd").parse(date);
         }
         catch (ParseException e) {
             throw new IllegalArgumentException(e);

@@ -15,7 +15,7 @@ class SelectInfo {
     SelectOrderByInfo[] orderBys = null;
     Object[] limit = null;
 
-    public SelectInfo(Rdb rdb) {
+    SelectInfo(Rdb rdb) {
         this.rdb = rdb;
     }
 
