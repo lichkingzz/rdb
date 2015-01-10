@@ -6,9 +6,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 class InsertRunner {
 
-    InsertInfo insertInfo;
+    static final Log log = LogFactory.getLog(InsertRunner.class);
+    final InsertInfo insertInfo;
 
     InsertRunner(InsertInfo insertInfo) {
         this.insertInfo = insertInfo;
@@ -34,7 +38,7 @@ class InsertRunner {
         BeanMapper mapper = Mappers.getMapper(beanClass);
         List<String> fields = new ArrayList<String>(mapper.getProperyNames());
         String sql = generateInsertSQLForBean(mapper.table, fields);
-        System.out.println("Generate INSERT: " + sql);
+        log.info("Execute SQL: " + sql);
         boolean shouldCloseConn = this.insertInfo.rdb.getDataSourceManager().shouldCloseConnection();
         boolean autoCommit = true;
         try {

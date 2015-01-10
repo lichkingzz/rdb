@@ -1,5 +1,7 @@
 package com.itranswarp.rdb;
 
+import java.util.List;
+
 public class SelectWhereT<T> {
 
     final SelectInfo selectInfo;
@@ -21,6 +23,10 @@ public class SelectWhereT<T> {
 
     public SelectLimitT<T> limit(int maxResults) {
         return new SelectLimitT<T>(this.selectInfo, 0, maxResults);
+    }
+
+    public List<T> list() {
+        return new SelectRunner(this.selectInfo).list();
     }
 
     public T first() {

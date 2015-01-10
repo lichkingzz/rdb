@@ -17,7 +17,7 @@ public class DeleteT<T> {
      * 
      * @param beans JavaBean objects.
      */
-    void runBatch(@SuppressWarnings("unchecked") T... beans) {
+    public void runBatch(@SuppressWarnings("unchecked") T... beans) {
         if (beans.length == 0) {
             throw new IllegalArgumentException("objects is empty.");
         }

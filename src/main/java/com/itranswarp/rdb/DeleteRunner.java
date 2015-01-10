@@ -88,6 +88,7 @@ class DeleteRunner {
 
     void deleteTable() {
         String sql = generateSQL(false);
+        log.info("Execute SQL: " + sql);
         Object[] args = this.deleteInfo.whereArgs;
         Connection conn = null;
         PreparedStatement ps = null;
