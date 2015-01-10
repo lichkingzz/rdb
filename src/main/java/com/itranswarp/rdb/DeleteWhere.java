@@ -5,7 +5,7 @@ public class DeleteWhere {
     final DeleteInfo deleteInfo;
 
     DeleteWhere(DeleteInfo deleteInfo, String clause, Object[] args) {
-        Utils.validateClause(clause, args);
+        SQLUtils.validateClause(clause, args);
         deleteInfo.whereClause = clause;
         deleteInfo.whereArgs = args;
         this.deleteInfo = deleteInfo;
