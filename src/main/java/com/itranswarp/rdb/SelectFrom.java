@@ -35,7 +35,7 @@ public class SelectFrom {
     }
 
     public String dryRun() {
-        return new SelectRunner(this.selectInfo).dryRun();
+        return dryRun(false);
     }
 
     public String dryRun(boolean includeParams) {

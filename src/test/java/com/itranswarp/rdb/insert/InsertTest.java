@@ -12,6 +12,7 @@ import java.util.List;
 import org.junit.Test;
 
 import com.itranswarp.rdb.DbTestBase;
+import com.itranswarp.rdb.SQLUtils;
 import com.itranswarp.rdb.User;
 
 /**
@@ -37,7 +38,7 @@ public class InsertTest extends DbTestBase {
     }
 
     @Test
-    public void testInsertFromString() throws Exception {
+    public void testInsertBean() throws Exception {
         Date birth = new SimpleDateFormat("yyyy-MM-dd").parse("1991-01-02");
         Date dt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2015-01-10 11:22:33");
         Date now = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2001-02-03 12:34:56");
@@ -72,9 +73,9 @@ public class InsertTest extends DbTestBase {
         User a = prepareUser(17023001L, "A", LocalDate.of(2000, 1, 1));
         User b = prepareUser(17023002L, "B", LocalDate.of(2000, 1, 1));
         User c = prepareUser(17023003L, "C", LocalDate.of(2000, 1, 1));
-        rdb.insert(User.class).batch(a, b, c).run();
+        rdb.insert(User.class).runBatch(a, b, c);
         // select:
-        List<User> us = rdb.select().from(User.class).where("birth=?", new SimpleDateFormat("yyyy-MM-dd").parse("2000-01-01")).orderBy("name").list();
+        List<User> us = rdb.select().from(User.class).where("birth=?", SQLUtils.asSqlDate("2000-01-01")).orderBy("name").list();
         assertEquals(3, us.size());
         User u1 = us.get(0);
         User u2 = us.get(1);

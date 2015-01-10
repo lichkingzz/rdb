@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,10 +21,6 @@ class SelectRunner {
 
     SelectRunner(SelectInfo selectInfo) {
         this.selectInfo = selectInfo;
-    }
-
-    public String dryRun() {
-        return generateSQL(false);
     }
 
     public String dryRun(boolean includeParams) {
@@ -74,24 +69,9 @@ class SelectRunner {
             throw new DataException(e);
         }
         finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                }
-                catch (SQLException e) {}
-            }
-            if (ps != null) {
-                try {
-                    ps.close();
-                }
-                catch (SQLException e) {}
-            }
-            if (conn != null && shouldCloseConn) {
-                try {
-                    conn.close();
-                }
-                catch (SQLException e) {}
-            }
+            SQLUtils.close(rs);
+            SQLUtils.close(ps);
+            SQLUtils.close(conn, shouldCloseConn);
         }
     }
 
@@ -162,7 +142,7 @@ class SelectRunner {
         }
         if (selectInfo.orderBys != null) {
             sb.append(" ORDER BY");
-            for (OrderByInfo orderBy : selectInfo.orderBys) {
+            for (SelectOrderByInfo orderBy : selectInfo.orderBys) {
                 sb.append(' ').append(orderBy.field);
                 if (orderBy.desc) {
                     sb.append(" DESC");

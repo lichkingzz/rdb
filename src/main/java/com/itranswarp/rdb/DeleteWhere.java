@@ -1,16 +1,13 @@
 package com.itranswarp.rdb;
 
-public class Delete {
+public class DeleteWhere {
 
     final DeleteInfo deleteInfo;
 
-    Delete(DeleteInfo deleteInfo, String table) {
-        deleteInfo.table = table;
+    DeleteWhere(DeleteInfo deleteInfo, String clause, Object[]... args) {
+        deleteInfo.whereClause = clause;
+        deleteInfo.whereArgs = args;
         this.deleteInfo = deleteInfo;
-    }
-
-    public DeleteWhere where(String clause, Object... args) {
-        return new DeleteWhere(this.deleteInfo, clause, args);
     }
 
     public String dryRun() {
@@ -22,10 +19,9 @@ public class Delete {
     }
 
     /**
-     * Danger! Will delete the whole table!
+     * Run this delete.
      */
     public void run() {
         new DeleteRunner(this.deleteInfo).run();
     }
-
 }

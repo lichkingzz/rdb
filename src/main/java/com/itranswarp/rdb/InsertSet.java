@@ -24,11 +24,11 @@ public class InsertSet {
     }
 
     public String dryRun(boolean includeParams) {
-        return new InsertRun(this.insertInfo).dryRun(includeParams);
+        return new InsertRunner(this.insertInfo).dryRun(includeParams);
     }
 
     public void run() {
-        new InsertRun(this.insertInfo).run();
+        new InsertRunner(this.insertInfo).run();
     }
 }
 

@@ -9,7 +9,7 @@ public class InsertT<T> {
         this.insertInfo = insertInfo;
     }
 
-    public InsertBatchT<T> batch(@SuppressWarnings("unchecked") T... beans) {
-        return new InsertBatchT<T>(this.insertInfo, beans);
+    public void runBatch(@SuppressWarnings("unchecked") T... beans) {
+        new InsertBatchT<T>(this.insertInfo, beans).run();
     }
 }

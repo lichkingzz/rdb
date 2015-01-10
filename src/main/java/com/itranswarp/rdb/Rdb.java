@@ -99,16 +99,11 @@ public class Rdb {
     }
 
     public Delete delete(String table) {
-        DeleteInfo deleteInfo = new DeleteInfo(this);
-        deleteInfo.table = table;
-        return new Delete(deleteInfo);
+        return new Delete(new DeleteInfo(this), table);
     }
 
-    public <T> DeleteT<T> delete(T object) {
-        DeleteInfo deleteInfo = new DeleteInfo(this);
-        deleteInfo.table = object.getClass().getSimpleName();
-        deleteInfo.bean = object;
-        return new DeleteT<T>(deleteInfo);
+    public <T> DeleteT<T> delete(Class<T> beanClass) {
+        return new DeleteT<T>(new DeleteInfo(this), beanClass);
     }
 
 }

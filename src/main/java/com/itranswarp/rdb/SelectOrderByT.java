@@ -9,12 +9,12 @@ public class SelectOrderByT<T> {
     SelectOrderByT(SelectInfo selectInfo, String field) {
         if (selectInfo.orderBys == null) {
             // first orderBy():
-            selectInfo.orderBys = new OrderByInfo[] { new OrderByInfo(field, false) };
+            selectInfo.orderBys = new SelectOrderByInfo[] { new SelectOrderByInfo(field, false) };
         }
         else {
-            OrderByInfo[] newOrderBys = new OrderByInfo[selectInfo.orderBys.length + 1];
+            SelectOrderByInfo[] newOrderBys = new SelectOrderByInfo[selectInfo.orderBys.length + 1];
             System.arraycopy(selectInfo.orderBys, 0, newOrderBys, 0, selectInfo.orderBys.length);
-            newOrderBys[newOrderBys.length - 1] = new OrderByInfo(field, false);
+            newOrderBys[newOrderBys.length - 1] = new SelectOrderByInfo(field, false);
             selectInfo.orderBys = newOrderBys;
         }
         this.selectInfo = selectInfo;
@@ -51,7 +51,7 @@ public class SelectOrderByT<T> {
     }
 
     public String dryRun() {
-        return new SelectRunner(this.selectInfo).dryRun();
+        return dryRun(false);
     }
 
     public String dryRun(boolean includeParams) {

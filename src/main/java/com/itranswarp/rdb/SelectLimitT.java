@@ -32,7 +32,7 @@ public class SelectLimitT<T> {
     }
 
     public String dryRun() {
-        return new SelectRunner(this.selectInfo).dryRun();
+        return dryRun(false);
     }
 
     public String dryRun(boolean includeParams) {

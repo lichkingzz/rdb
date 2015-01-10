@@ -12,7 +12,7 @@ public class InsertBatchT<T> {
         this.insertInfo = insertInfo;
     }
 
-    public void run() {
-        new InsertRun(this.insertInfo).run();
+    void run() {
+        new InsertRunner(this.insertInfo).run();
     }
 }
