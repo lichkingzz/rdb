@@ -84,5 +84,4 @@ public class InsertTest extends DbTestBase {
         assertEquals("B", u2.name);
         assertEquals("C", u3.name);
     }
-
 }

@@ -62,4 +62,13 @@ public class DeleteTest extends DbTestBase {
         assertEquals(1, rdb.select().from(User.class).where("name like ?", "Bean%").list().size());
     }
 
+    @Test(expected=NullPointerException.class)
+    public void testDeleteWhereIsNull() {
+        rdb.delete("User").where(null, 1, 2, 3);
+    }
+
+    @Test(expected=IllegalArgumentException.class)
+    public void testDeleteWhereArgIsEmpty() {
+        rdb.delete("User").where("name=?");
+    }
 }
