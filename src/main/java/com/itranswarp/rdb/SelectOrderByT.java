@@ -43,11 +43,11 @@ public class SelectOrderByT<T> {
     }
 
     public List<T> list() {
-        return new SelectRunnerT<T>(this.selectInfo).list();
+        return new SelectRunner(this.selectInfo).list();
     }
 
     public T first() {
-        return new SelectRunnerT<T>(this.selectInfo).first();
+        return new SelectRunner(this.selectInfo).first();
     }
 
     public String dryRun() {

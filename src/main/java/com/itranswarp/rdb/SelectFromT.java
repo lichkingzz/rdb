@@ -64,6 +64,10 @@ public class SelectFromT<T> {
     }
 
     public String dryRun() {
-        return new SelectRunnerT<T>(this.selectInfo).dryRun();
+        return dryRun(false);
+    }
+
+    public String dryRun(boolean includeParams) {
+        return new SelectRunner(this.selectInfo).dryRun(includeParams);
     }
 }

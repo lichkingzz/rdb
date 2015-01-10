@@ -30,11 +30,11 @@ public class SelectWhereT<T> {
     }
 
     public T first() {
-        return new SelectRunnerT<T>(this.selectInfo).first();
+        return new SelectRunner(this.selectInfo).first();
     }
 
     public T unique() {
-        return new SelectRunnerT<T>(this.selectInfo).unique();
+        return new SelectRunner(this.selectInfo).unique();
     }
 
     public String dryRun() {
