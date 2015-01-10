@@ -86,16 +86,11 @@ public class Rdb {
     }
 
     public Update update(String table) {
-        UpdateInfo updateInfo = new UpdateInfo(this);
-        updateInfo.table = table;
-        return new Update(updateInfo);
+        return new Update(new UpdateInfo(this), table);
     }
 
-    public <T> UpdateT<T> update(T object) {
-        UpdateInfo updateInfo = new UpdateInfo(this);
-        updateInfo.table = object.getClass().getSimpleName();
-        updateInfo.bean = object;
-        return new UpdateT<T>(updateInfo);
+    public <T> UpdateT<T> update(Class<T> beanClass) {
+        return new UpdateT<T>(new UpdateInfo(this), beanClass);
     }
 
     public Delete delete(String table) {
