@@ -13,8 +13,8 @@ create table User (
     aboutMe varchar(100) null,
     birth date not null,
     lastLoginAt datetime null,
-    createdAt timestamp not null,
-    updatedAt timestamp not null,
+    createdAt timestamp not null default 0,
+    updatedAt timestamp not null default 0,
     version bigint not null,
     primary key (id)
 );
@@ -25,8 +25,8 @@ create table Book (
     name varchar(100) not null,
     description text null,
     publishAt date not null,
-    createdAt timestamp not null,
-    updatedAt timestamp not null,
+    createdAt timestamp not null default 0,
+    updatedAt timestamp not null default 0,
     version bigint not null,
     primary key (id)
 );

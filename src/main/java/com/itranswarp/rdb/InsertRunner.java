@@ -32,6 +32,7 @@ class InsertRunner {
     }
 
     void insertBeans() {
+        final Rdb rdb = this.insertInfo.rdb;
         Connection conn = null;
         PreparedStatement ps = null;
         Class<?> beanClass = this.insertInfo.beans[0].getClass();
@@ -39,16 +40,17 @@ class InsertRunner {
         List<String> fields = new ArrayList<String>(mapper.getProperyNames());
         String sql = generateInsertSQLForBean(mapper.table, fields);
         log.info("Execute SQL: " + sql);
-        boolean shouldCloseConn = this.insertInfo.rdb.getDataSourceManager().shouldCloseConnection();
+        boolean shouldCloseConn = rdb.getDataSourceManager().shouldCloseConnection();
         boolean autoCommit = true;
         try {
-            conn = this.insertInfo.rdb.getDataSourceManager().getConnection();
+            conn = rdb.getDataSourceManager().getConnection();
             if (shouldCloseConn) {
                 autoCommit = conn.getAutoCommit();
                 conn.setAutoCommit(false);
             }
             ps = conn.prepareStatement(sql);
             for (Object bean : this.insertInfo.beans) {
+                rdb.beforeInsert(bean);
                 Object[] args = prepareBeanPropertyValues(bean, mapper, fields);
                 SQLUtils.setPreparedStatementParameters(ps, args);
                 ps.addBatch();

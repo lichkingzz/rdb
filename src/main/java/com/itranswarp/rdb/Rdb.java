@@ -11,6 +11,7 @@ import java.util.Map;
  */
 public class Rdb {
 
+    EntityListener entityListener = null;
     DataSourceManager dataSourceManager = null;
     Map<String, TypeAdapter<?>> typeAdapters = new HashMap<String, TypeAdapter<?>>();
 
@@ -27,6 +28,28 @@ public class Rdb {
 
     public void setDataSourceManager(DataSourceManager dataSourceManager) {
         this.dataSourceManager = dataSourceManager;
+    }
+
+    public void setEntityListener(EntityListener entityListener) {
+        this.entityListener = entityListener;
+    }
+
+    void beforeInsert(Object bean) {
+        if (entityListener!=null) {
+            entityListener.beforeInsert(bean);
+        }
+    }
+
+    void beforeUpdate(Object bean) {
+        if (entityListener!=null) {
+            entityListener.beforeUpdate(bean);
+        }
+    }
+
+    void beforeDelete(Object bean) {
+        if (entityListener!=null) {
+            entityListener.beforeDelete(bean);
+        }
     }
 
     Object jdbcTypeToJavaType(Class<?> targetClass, Object originalValue) {

@@ -74,10 +74,12 @@ class UpdateRunner {
             this.updateInfo.fieldsOnly = fields.toArray(EMPTY_FIELDS);
         }
         String sql = generateSQLForBean(this.updateInfo.fieldsOnly);
+        log.info("EXECUTE SQL: " + sql);
         Connection conn = null;
         PreparedStatement ps = null;
         boolean shouldCloseConn = this.updateInfo.rdb.getDataSourceManager().shouldCloseConnection();
         try {
+            this.updateInfo.rdb.beforeUpdate(this.updateInfo.bean);
             Object[] args = generateArgsForBean(this.updateInfo.fieldsOnly);
             conn = this.updateInfo.rdb.getDataSourceManager().getConnection();
             ps = conn.prepareStatement(sql);

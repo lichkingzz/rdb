@@ -18,6 +18,7 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 public class DbTestBase {
 
     public Rdb rdb = null;
+    public final double DELTA_3_SECONDS = 3000.0;
 
     @Before
     public void setUp() throws Exception {

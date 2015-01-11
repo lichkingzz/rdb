@@ -38,7 +38,7 @@ public class InsertTest extends DbTestBase {
     }
 
     @Test
-    public void testInsertBean() throws Exception {
+    public void testInsertTable() throws Exception {
         Date birth = new SimpleDateFormat("yyyy-MM-dd").parse("1991-01-02");
         Date dt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2015-01-10 11:22:33");
         Date now = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2001-02-03 12:34:56");
