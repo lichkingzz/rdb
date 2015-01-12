@@ -8,7 +8,8 @@ Rdb does not re-invent SQL-like query. It just uses the SQL-style with chained c
 Let's see how simple to query with "SQL":
 
 ```
-List<?> rows = rdb.select("id", "name", "lastLoginAt")
+// each row contains a Map:
+List<Map<string, Object> rows = rdb.select("id", "name", "lastLoginAt")
                   .from("users")
                   .where("lastLoginAt > ?", loginDate)
                   .orderBy("id")
@@ -19,6 +20,7 @@ List<?> rows = rdb.select("id", "name", "lastLoginAt")
 Cool! But Rdb can do more! You can query with JavaBeans, and it is type-safe:
 
 ```
+// each row contains a User object:
 List<User> users = rdb.select()
                       .from(User.class)
                       .where("lastLoginAt > ?", loginDate)
