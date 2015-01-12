@@ -15,21 +15,44 @@ public class Rdb {
     DataSourceManager dataSourceManager = null;
     Map<String, TypeAdapter<?>> typeAdapters = new HashMap<String, TypeAdapter<?>>();
 
+    /**
+     * Construct a new Rdb object.
+     */
     public Rdb() {
     }
 
+    /**
+     * Construct a new Rdb object with a DataSourceManager.
+     * 
+     * @param dataSourceManager The DataSourceManager object.
+     */
     public Rdb(DataSourceManager dataSourceManager) {
         this.dataSourceManager = dataSourceManager;
     }
 
+    /**
+     * Get DataSourceManager of rdb.
+     * 
+     * @return The DataSourceManager object.
+     */
     public DataSourceManager getDataSourceManager() {
         return this.dataSourceManager;
     }
 
+    /**
+     * Set DataSourceManager for rdb object.
+     * 
+     * @param dataSourceManager The DataSourceManager object.
+     */
     public void setDataSourceManager(DataSourceManager dataSourceManager) {
         this.dataSourceManager = dataSourceManager;
     }
 
+    /**
+     * Set an EntityListener object for rdb object.
+     * 
+     * @param entityListener The EntityListener object.
+     */
     public void setEntityListener(EntityListener entityListener) {
         this.entityListener = entityListener;
     }
@@ -71,6 +94,7 @@ public class Rdb {
     /**
      * Register a TypeAdapter that convert between JDBC type and JavaBean property type.
      * 
+     * @param <T> The generic type.
      * @param clazz Class of the type.
      * @param typeAdapter TypeAdapter instance.
      */
@@ -101,6 +125,7 @@ public class Rdb {
     /**
      * Batch insert for a group of objects.
      * 
+     * @param <T> The generic type.
      * @param beanClass The JavaBean class.
      * @return InsertT object for next operation.
      */
@@ -121,6 +146,7 @@ public class Rdb {
     /**
      * Start an update of JavaBean.
      * 
+     * @param <T> The generic type.
      * @param beanClass The JavaBean class.
      * @return Update object for next operation.
      */
@@ -141,7 +167,8 @@ public class Rdb {
     /**
      * Start a delete of JavaBean.
      * 
-     * @param beanClass
+     * @param <T> The generic type.
+     * @param beanClass The JavaBean class.
      * @return Delete object for next operation.
      */
     public <T> DeleteT<T> delete(Class<T> beanClass) {
