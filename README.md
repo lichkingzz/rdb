@@ -31,3 +31,5 @@ List<User> users = rdb.select()
 It is a simple ORM but does not have "ORM" magic. There is no magic object: 
 you just get Java beans you defined. It is no proxied nor cglibed. Say goodbye 
 to StaleObjectException.
+
+Read more on [http://rdb.itranswarp.com](http://rdb.itranswarp.com).
