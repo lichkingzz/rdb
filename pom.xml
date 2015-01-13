@@ -4,7 +4,7 @@
 
 	<groupId>com.itranswarp</groupId>
 	<artifactId>rdb</artifactId>
-	<version>1.0</version>
+	<version>1.0.1</version>
 	<packaging>jar</packaging>
 
 	<name>rdb</name>
