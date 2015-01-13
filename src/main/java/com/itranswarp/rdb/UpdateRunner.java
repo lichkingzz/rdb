@@ -58,29 +58,31 @@ class UpdateRunner {
 
     void updateBean() {
         String primaryKey = this.updateInfo.beanMapper.primaryKey;
-        Set<String> fields = this.updateInfo.beanMapper.getProperyNames();
+        Set<String> props = this.updateInfo.beanMapper.getProperyNames();
+        String[] fields = null;
         if (this.updateInfo.fieldsOnly != null) {
             for (String f : this.updateInfo.fieldsOnly) {
-                if (! fields.contains(f)) {
+                if (! props.contains(f)) {
                     throw new IllegalArgumentException("Field \"" + f + "\" not found.");
                 }
                 if (primaryKey.equals(f)) {
                     log.warn("Update primary key is not recommended.");
                 }
             }
+            fields = this.updateInfo.fieldsOnly;
         }
         else {
-            fields.remove(primaryKey);
-            this.updateInfo.fieldsOnly = fields.toArray(EMPTY_FIELDS);
+            props.remove(primaryKey);
+            fields = props.toArray(EMPTY_FIELDS);
         }
-        String sql = generateSQLForBean(this.updateInfo.fieldsOnly);
+        String sql = generateSQLForBean(fields);
         log.info("EXECUTE SQL: " + sql);
         Connection conn = null;
         PreparedStatement ps = null;
         boolean shouldCloseConn = this.updateInfo.rdb.getDataSourceManager().shouldCloseConnection();
         try {
             this.updateInfo.rdb.beforeUpdate(this.updateInfo.bean);
-            Object[] args = generateArgsForBean(this.updateInfo.fieldsOnly);
+            Object[] args = generateArgsForBean(fields);
             conn = this.updateInfo.rdb.getDataSourceManager().getConnection();
             ps = conn.prepareStatement(sql);
             SQLUtils.setPreparedStatementParameters(ps, args);
