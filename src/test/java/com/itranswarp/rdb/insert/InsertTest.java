@@ -7,7 +7,9 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -66,6 +68,39 @@ public class InsertTest extends DbTestBase {
         assertEquals("2015-01-10T11:22:33", u.lastLoginAt.toString());
         assertEquals("2001-02-03 12:34:56", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(u.createdAt));
         assertEquals("2001-02-03 12:34:56", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(u.updatedAt));
+    }
+
+    @Test
+    public void testInsertTableWithMap() throws Exception {
+        Date birth = new SimpleDateFormat("yyyy-MM-dd").parse("1992-03-04");
+        Date dt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2011-11-11 11:22:33");
+        Date now = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2013-11-11 12:34:56");
+        Timestamp ts = new Timestamp(now.getTime());
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("id", 50607080);
+        map.put("name", "-_-");
+        map.put("email", "abc@xyz.com");
+        map.put("passwd", "^_^");
+        map.put("gender", true);
+        map.put("aboutMe", null);
+        map.put("birth", birth);
+        map.put("lastLoginAt", dt);
+        map.put("createdAt", ts);
+        map.put("updatedAt", ts);
+        map.put("version", 0);
+        rdb.insert("User")
+                .sets(map)
+                .run();
+        // select:
+        User u = rdb.select().from(User.class).byId(50607080);
+        assertEquals("-_-", u.name);
+        assertEquals("^_^", u.passwd);
+        assertTrue(u.gender);
+        assertNull(u.aboutMe);
+        assertEquals("1992-03-04", u.birth.toString());
+        assertEquals("2011-11-11T11:22:33", u.lastLoginAt.toString());
+        assertEquals("2013-11-11 12:34:56", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(u.createdAt));
+        assertEquals("2013-11-11 12:34:56", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(u.updatedAt));
     }
 
     @Test

@@ -1,5 +1,7 @@
 package com.itranswarp.rdb;
 
+import java.util.Map;
+
 public class Insert {
 
     final InsertInfo insertInfo;
@@ -13,4 +15,7 @@ public class Insert {
         return new InsertSet(this.insertInfo, field, value);
     }
 
+    public InsertSets sets(Map<String, Object> values) {
+        return new InsertSets(this.insertInfo, values);
+    }
 }
