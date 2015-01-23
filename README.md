@@ -9,7 +9,7 @@ Let's see how simple to query with "SQL":
 
 ```
 // each row contains a Map:
-List<Map<string, Object> rows = rdb.select("id", "name", "lastLoginAt")
+List<Map<string, Object>> rows = rdb.select("id", "name", "lastLoginAt")
                   .from("users")
                   .where("lastLoginAt > ?", loginDate)
                   .orderBy("id")
